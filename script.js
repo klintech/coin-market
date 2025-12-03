@@ -1,35 +1,38 @@
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('message-modal');
+
 function openMessageModal() {
-    document.getElementById('message-modal').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    overlay.style.display = 'block';
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    document.getElementById('message') ? .focus();
 }
 
 function closeMessageModal() {
-    document.getElementById('message-modal').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-    document.body.style.overflow = 'auto';
+    overlay.style.display = 'none';
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
 }
 
 function sendMessage() {
-    const message = document.getElementById('message').value;
-    if (message.trim()) {
-        alert('Thank you for your message. One of our advisors will contact you shortly.');
-        document.getElementById('message').value = '';
-        closeMessageModal();
-    } else {
-        alert('Please enter a message before sending.');
-    }
+    const t = document.getElementById('message');
+    const txt = t ? .value.trim();
+    if (!txt) { alert('Please enter a message.'); return; }
+    console.log('Message sent:', txt);
+    alert('Message sent — an advisor will contact you shortly.');
+    if (t) t.value = '';
+    closeMessageModal();
 }
 
 function openRegisterPage() {
-    alert('Thank you for your interest in opening an account. Our account registration page will be available soon.');
-    // You can replace this with actual registration functionality
-    // window.location.href = '/register.html';
+    // update to your actual registration route
+    window.location.href = 'register.html';
 }
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeMessageModal(); });
 
 // Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
         e.preventDefault();
         document.querySelector(this.getAttribute('href')).scrollIntoView({
             behavior: 'smooth'
@@ -49,3 +52,34 @@ window.addEventListener('scroll', () => {
     });
 });
 
+{
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMobile = document.getElementById('nav-mobile');
+
+    function toggleNav() {
+        if (!navToggle || !navMobile) return;
+        const isOpen = navMobile.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+        navMobile.setAttribute('aria-hidden', String(!isOpen));
+    }
+
+    // close if clicking outside or pressing Escape
+    function closeNav() {
+        if (!navMobile || !navToggle) return;
+        navMobile.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        navMobile.setAttribute('aria-hidden', 'true');
+    }
+
+    navToggle ? .addEventListener('click', (e) => { e.stopPropagation();
+        toggleNav(); });
+    window.addEventListener('click', (e) => {
+        if (!navMobile) return;
+        if (navMobile.classList.contains('open') && !navMobile.contains(e.target) && !navToggle.contains(e.target)) {
+            closeNav();
+        }
+    });
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeNav();
+    });
+}
